@@ -29,7 +29,9 @@ jobs:
           ./scripts/feeds install -a
           echo "CONFIG_TARGET_ramips=y" > .config
           echo "CONFIG_TARGET_ramips_mt76x8=y" >> .config
-          echo "CONFIG_TARGET_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1=y" >> .config
+          echo "CONFIG_TARGET_MULTI_PROFILE=y" >> .config
+          echo "CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1=y" >> .config
+          echo "CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1-factory=y" >> .config
           make defconfig
 
       - name: Компиляция прошивки
