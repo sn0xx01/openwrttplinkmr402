@@ -26,6 +26,10 @@ jobs:
       - name: Обновление фидов и настройка под MR402
         run: |
           ./scripts/feeds update -a
+          git -C feeds/luci fetch --shallow-since="2026-01-01"
+          git -C feeds/packages fetch --shallow-since="2026-01-01"
+          git -C feeds/luci checkout $(git -C feeds/luci rev-list -n 1 --before="2026-02-20" HEAD)
+          git -C feeds/packages checkout $(git -C feeds/packages rev-list -n 1 --before="2026-02-20" HEAD)
           ./scripts/feeds install -a
           echo "CONFIG_TARGET_ramips=y" > .config
           echo "CONFIG_TARGET_ramips_mt76x8=y" >> .config
@@ -40,6 +44,7 @@ jobs:
           echo "CONFIG_PACKAGE_strongswan-minimal=y" >> .config
           echo "CONFIG_PACKAGE_strongswan-mod-openssl=y" >> .config
           make defconfig
+
 
 
       - name: Компиляция прошивки
