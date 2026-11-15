@@ -31,18 +31,34 @@ jobs:
           git -C feeds/luci checkout $(git -C feeds/luci rev-list -n 1 --before="2026-02-20" HEAD)
           git -C feeds/packages checkout $(git -C feeds/packages rev-list -n 1 --before="2026-02-20" HEAD)
           ./scripts/feeds install -a
-          echo "CONFIG_TARGET_ramips=y" > .config
-          echo "CONFIG_TARGET_ramips_mt76x8=y" >> .config
-          echo "CONFIG_TARGET_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1=y" >> .config
-          echo "CONFIG_PACKAGE_luci=y" >> .config
-          echo "CONFIG_PACKAGE_luci-i18n-base-ru=y" >> .config
-          echo "CONFIG_PACKAGE_kmod-usb-net-cdc-ether=y" >> .config
-          echo "CONFIG_PACKAGE_kmod-usb-serial-option=y" >> .config
-          echo "CONFIG_PACKAGE_picocom=y" >> .config
-          echo "CONFIG_PACKAGE_strongswan-minimal=y" >> .config
-          echo "CONFIG_PACKAGE_strongswan-mod-openssl=y" >> .config
+          cat << 'EOF' > .config
+          CONFIG_TARGET_ramips=y
+          CONFIG_TARGET_ramips_mt76x8=y
+          CONFIG_TARGET_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1=y
+          CONFIG_PACKAGE_luci=y
+          CONFIG_PACKAGE_luci-i18n-base-ru=y
+          CONFIG_PACKAGE_kmod-usb-net-cdc-ether=y
+          CONFIG_PACKAGE_kmod-usb-serial-option=y
+          CONFIG_PACKAGE_picocom=y
+          CONFIG_PACKAGE_kmod-ipsec=y
+          CONFIG_PACKAGE_kmod-ipsec4=y
+          CONFIG_PACKAGE_strongswan=y
+          CONFIG_PACKAGE_strongswan-charon=y
+          CONFIG_PACKAGE_strongswan-mod-aes=y
+          CONFIG_PACKAGE_strongswan-mod-sha1=y
+          CONFIG_PACKAGE_strongswan-mod-sha2=y
+          CONFIG_PACKAGE_strongswan-mod-gmp=y
+          CONFIG_PACKAGE_strongswan-mod-hmac=y
+          CONFIG_PACKAGE_strongswan-mod-kernel-netlink=y
+          CONFIG_PACKAGE_strongswan-mod-socket-default=y
+          CONFIG_PACKAGE_strongswan-mod-stroke=y
+          CONFIG_PACKAGE_strongswan-mod-updown=y
+          CONFIG_PACKAGE_strongswan-mod-openssl=y
+          EOF
           make defconfig
-          grep -E "strongswan|kmod-ipsec" .config
+          grep -E "CONFIG_PACKAGE_(strongswan|kmod-ipsec)" .config
+          grep -q "CONFIG_PACKAGE_strongswan=y" .config || (echo "ERROR: strongswan не включился!" && exit 1)
+
 
       - name: Компиляция прошивки
         run: |
