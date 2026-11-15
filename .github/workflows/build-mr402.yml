@@ -33,9 +33,7 @@ jobs:
           ./scripts/feeds install -a
           echo "CONFIG_TARGET_ramips=y" > .config
           echo "CONFIG_TARGET_ramips_mt76x8=y" >> .config
-          echo "CONFIG_TARGET_MULTI_PROFILE=y" >> .config
-          echo "CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1=y" >> .config
-          echo "CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1-factory=y" >> .config
+          echo "CONFIG_TARGET_ramips_mt76x8_DEVICE_tplink_archer-mr402-v1=y" >> .config
           echo "CONFIG_PACKAGE_luci=y" >> .config
           echo "CONFIG_PACKAGE_luci-i18n-base-ru=y" >> .config
           echo "CONFIG_PACKAGE_kmod-usb-net-cdc-ether=y" >> .config
@@ -44,16 +42,18 @@ jobs:
           echo "CONFIG_PACKAGE_strongswan-minimal=y" >> .config
           echo "CONFIG_PACKAGE_strongswan-mod-openssl=y" >> .config
           make defconfig
-
-
+          grep -E "strongswan|kmod-ipsec" .config
 
       - name: Компиляция прошивки
         run: |
           make download -j8
           make -j$(nproc) || make -j1 V=s
 
-      - name: Выгрузка готовых .bin файлов
+      - name: Выгрузка готовых .bin и .apk файлов
         uses: actions/upload-artifact@v4
         with:
           name: mr402-firmware
-          path: bin/targets/ramips/mt76x8/*.bin
+          path: |
+            bin/targets/ramips/mt76x8/*.bin
+            bin/targets/ramips/mt76x8/packages/*.apk
+            bin/packages/mipsel_24kc/packages/*strongswan*.apk
